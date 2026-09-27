@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>KYC 工具中心 v1.2</title>
+<style>
+:root{
+  --bg:#f4f6f8;--panel:#fff;--line:#e5e7eb;--text:#111827;--muted:#6b7280;
+  --shadow:0 14px 38px rgba(15,23,42,.10);--soft:#f8fafc;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC",sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+body{min-height:100vh}
+.header{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(14px + env(safe-area-inset-top)) 18px 14px;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--line)
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{
+  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#0f172a,#334155);color:#fff;font-weight:850;font-size:17px;
+  box-shadow:0 8px 22px rgba(15,23,42,.2)
+}
+.brand-title{font-size:18px;font-weight:850;letter-spacing:.02em}
+.brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.header-actions{display:flex;gap:8px}
+.icon-btn,.add-btn{
+  height:44px;border-radius:13px;border:1px solid var(--line);background:#fff;font-weight:750
+}
+.icon-btn{width:44px;font-size:19px}
+.add-btn{padding:0 14px}
+.main{max-width:1040px;margin:0 auto;padding:24px 18px calc(32px + env(safe-area-inset-bottom))}
+.hero{
+  background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;border-radius:24px;padding:26px 24px;
+  box-shadow:var(--shadow);margin-bottom:20px
+}
+.hero h1{font-size:28px;line-height:1.2;margin:0 0 8px}
+.hero p{margin:0;color:#cbd5e1;line-height:1.65;font-size:14px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 2px 12px}
+.section-title{font-size:14px;font-weight:800}
+.count{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card{
+  position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--line);
+  border-radius:22px;padding:22px;box-shadow:0 8px 24px rgba(15,23,42,.06);
+  min-height:220px;display:flex;flex-direction:column;transition:.18s transform,.18s box-shadow,.18s border-color
+}
+.card.clickable{cursor:pointer}
+.card.clickable:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:#cbd5e1}
+.card.clickable:active{transform:scale(.99)}
+.card::after{
+  content:"";position:absolute;width:170px;height:170px;border-radius:50%;
+  right:-56px;top:-60px;background:var(--card-color,#64748b);opacity:.09;pointer-events:none
+}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.card-icon{
+  width:62px;height:62px;border-radius:18px;display:grid;place-items:center;
+  font-size:30px;margin-bottom:18px;background:var(--icon-bg,#f1f5f9)
+}
+.card-edit{
+  position:relative;z-index:2;width:38px;height:38px;border-radius:11px;border:1px solid var(--line);
+  background:#fff;color:#475569;font-size:16px
+}
+.card h2{margin:0 0 8px;font-size:22px}
+.card p{margin:0;color:var(--muted);line-height:1.65;font-size:14px}
+.card-bottom{margin-top:auto;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:#f59e0b}
+.status.ready .dot{background:#22c55e}
+.enter{font-weight:800;font-size:14px}
+.add-card{
+  border:1.5px dashed #cbd5e1;background:rgba(255,255,255,.55);min-height:220px;
+  display:flex;align-items:center;justify-content:center;text-align:center;color:#64748b
+}
+.add-card:hover{border-color:#94a3b8;background:#fff}
+.add-card .plus{font-size:34px;line-height:1;margin-bottom:10px}
+.add-card strong{display:block;color:#334155;font-size:16px}
+.add-card span{display:block;font-size:12px;margin-top:5px}
+.note{
+  margin-top:18px;padding:14px 16px;border-radius:16px;background:#fff;border:1px solid var(--line);
+  color:var(--muted);font-size:13px;line-height:1.65
+}
+.footer{text-align:center;color:#9ca3af;font-size:12px;margin-top:22px}
+.overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:40;display:none;
+  align-items:flex-end;justify-content:center
+}
+.overlay.show{display:flex}
+.modal{
+  width:min(640px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px 24px 0 0;
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -14px 40px rgba(15,23,42,.2)
+}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.modal h3{margin:0;font-size:20px}
+.close{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:20px}
+.field{margin-top:14px}
+.field-row{display:grid;grid-template-columns:120px 1fr;gap:12px}
+.field label{display:block;font-size:13px;font-weight:750;margin-bottom:6px}
+.field input,.field textarea,.field select{
+  width:100%;border:1px solid #d1d5db;border-radius:12px;padding:12px 13px;outline:none;background:#fafafa
+}
+.field textarea{min-height:86px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{
+  border-color:#93c5fd;box-shadow:0 0 0 3px #dbeafe;background:#fff
+}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px}
+.actions{display:flex;gap:10px;margin-top:18px}
+.btn{flex:1;border:0;border-radius:12px;padding:12px 14px;font-weight:800}
+.btn.secondary{background:#f3f4f6;color:#374151}
+.btn.primary{background:#0f172a;color:#fff}
+.btn.danger{background:#fee2e2;color:#b91c1c}
+.settings-block{
+  margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fafafa
+}
+.settings-block h4{margin:0 0 7px;font-size:14px}
+.settings-block p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}
+.toast{
+  position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));z-index:60;
+  transform:translate(-50%,18px);background:#111827;color:#fff;padding:10px 14px;border-radius:999px;
+  font-size:13px;opacity:0;pointer-events:none;transition:.2s;white-space:nowrap
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){
+  .header{padding-left:12px;padding-right:12px}
+  .add-btn{width:44px;padding:0;font-size:0}
+  .add-btn::before{content:"＋";font-size:22px}
+  .main{padding:18px 12px calc(28px + env(safe-area-inset-bottom))}
+  .hero{padding:22px 18px;border-radius:20px}
+  .hero h1{font-size:24px}
+  .grid{grid-template-columns:1fr;gap:14px}
+  .card,.add-card{min-height:188px;padding:19px;border-radius:19px}
+  .card-icon{width:56px;height:56px;font-size:27px;margin-bottom:14px}
+  .field-row{grid-template-columns:92px 1fr}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <div class="logo">KYC</div>
+    <div>
+      <div class="brand-title">工具中心</div>
+      <div class="brand-sub">統一入口 · v1.2</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="add-btn" id="addToolBtn">＋ 新增工具</button>
+    <button class="icon-btn" id="settingsBtn" aria-label="設定" title="設定">⚙️</button>
+  </div>
+</header>
+
+<main class="main">
+  <section class="hero">
+    <h1>我的系統</h1>
+    <p>飲食、財經，以及之後新增的其他專案，都從同一個入口進入；各系統仍獨立保存與更新。</p>
+  </section>
+
+  <div class="section-head">
+    <div class="section-title">工具列表</div>
+    <div class="count" id="toolCount"></div>
+  </div>
+
+  <section class="grid" id="toolGrid"></section>
+
+  <div class="note">
+    💡 右上角「＋新增工具」可直接加入新的 GitHub Pages 或其他網頁系統；每張卡片右上角 ✏️ 可修改名稱、圖示、說明與網址。
+  </div>
+
+  <div class="footer">KYC Tools · Unified Portal</div>
+</main>
+
+<!-- 工具新增 / 修改 -->
+<div class="overlay" id="toolOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="toolModalTitle">新增工具</h3>
+      <button class="close" data-close="toolOverlay" aria-label="關閉">×</button>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="toolIcon">圖示</label>
+        <input id="toolIcon" maxlength="4" placeholder="🧰">
+      </div>
+      <div class="field">
+        <label for="toolName">名稱</label>
+        <input id="toolName" placeholder="例如：工作記事">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="toolDesc">說明</label>
+      <textarea id="toolDesc" placeholder="這個工具主要做什麼…"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="toolUrl">網址</label>
+      <input id="toolUrl" inputmode="url" placeholder="https://你的帳號.github.io/專案名稱/">
+      <div class="hint">GitHub Pages、一般 HTTPS 網址都可以。</div>
+    </div>
+
+    <div class="field">
+      <label for="toolColor">卡片色系</label>
+      <select id="toolColor">
+        <option value="green">綠色</option>
+        <option value="blue">藍色</option>
+        <option value="purple">紫色</option>
+        <option value="orange">橘色</option>
+        <option value="pink">粉紅</option>
+        <option value="slate">灰藍</option>
+      </select>
+    </div>
+
+    <div class="actions" id="toolActions">
+      <button class="btn danger" id="deleteToolBtn" style="display:none">刪除</button>
+      <button class="btn secondary" data-close="toolOverlay">取消</button>
+      <button class="btn primary" id="saveToolBtn">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 設定 -->
+<div class="overlay" id="settingsOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3>工具中心設定</h3>
+      <button class="close" data-close="settingsOverlay" aria-label="關閉">×</button>
+    </div>
+
+    <div class="settings-block">
+      <h4>工具中心網址</h4>
+      <p id="homeUrlText">—</p>
+    </div>
+
+    <div class="settings-block">
+      <h4>資料保存方式</h4>
+      <p>工具清單與網址保存在這個瀏覽器的 localStorage。原本飲食與財經系統的資料不會被搬進工具中心。</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" id="restoreDefaultsBtn">補回預設工具</button>
+      <button class="btn primary" data-close="settingsOverlay">完成</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_KEY='kyc_tool_center_apps_v2';
+const LEGACY_KEY='kyc_tool_center_v1';
+const HOME_KEY='kyc_tool_center_home_v1';
+
+const colorMap={
+  green:{color:'#16a34a',bg:'#ecfdf5'},
+  blue:{color:'#2563eb',bg:'#eff6ff'},
+  purple:{color:'#7c3aed',bg:'#f5f3ff'},
+  orange:{color:'#ea580c',bg:'#fff7ed'},
+  pink:{color:'#db2777',bg:'#fdf2f8'},
+  slate:{color:'#475569',bg:'#f1f5f9'}
+};
+
+const defaultApps=[
+  {
+    id:'health',name:'飲食健康管理',icon:'🥗',
+    desc:'食品主檔、飲食紀錄、營養計算、體重體脂、運動與照片等功能。',
+    url:'',color:'green',builtin:true
+  },
+  {
+    id:'finance',name:'財經知識系統',icon:'📈',
+    desc:'文章收藏、網址匯入、螢光筆、文字註解、名詞管理與閱讀整理。',
+    url:'',color:'blue',builtin:true
+  }
+];
+
+function uid(){return 'tool_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function normalizeUrl(v){
+  v=(v||'').trim();
+  if(!v)return '';
+  if(!/^https?:\/\//i.test(v) && !v.startsWith('./') && !v.startsWith('../') && !v.startsWith('/')){
+    v='https://'+v;
+  }
+  return v;
+}
+function autoFinanceUrl(){
+  if(location.hostname.endsWith('.github.io')){
+    return `${location.protocol}//${location.hostname}/finance-knowledge-system/`;
+  }
+  return '';
+}
+function rememberHome(){
+  try{
+    const cleanHome=location.href.split('#')[0].split('?')[0];
+    localStorage.setItem(HOME_KEY,cleanHome);
+    document.getElementById('homeUrlText').textContent=cleanHome;
+  }catch(e){}
+}
+function loadApps(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(APPS_KEY)||'null');
+    if(Array.isArray(saved) && saved.length)return saved;
+  }catch(e){}
+
+  const apps=clone(defaultApps);
+
+  // 自動承接 v1.1 已設定的兩個網址
+  try{
+    const legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||'{}')||{};
+    const h=apps.find(x=>x.id==='health');
+    const f=apps.find(x=>x.id==='finance');
+    if(h)h.url=legacy.health||'';
+    if(f)f.url=legacy.finance||autoFinanceUrl();
+  }catch(e){
+    const f=apps.find(x=>x.id==='finance');
+    if(f)f.url=autoFinanceUrl();
+  }
+  saveApps(apps);
+  return apps;
+}
+function saveApps(list=apps){
+  localStorage.setItem(APPS_KEY,JSON.stringify(list));
+}
+let apps=loadApps();
+let editingId=null;
+
+function esc(s){
+  return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer=setTimeout(()=>t.classList.remove('show'),1600);
+}
+function render(){
+  const grid=document.getElementById('toolGrid');
+  grid.innerHTML='';
+  apps.forEach(app=>{
+    const cm=colorMap[app.color]||colorMap.slate;
+    const card=document.createElement('article');
+    card.className='card clickable';
+    card.tabIndex=0;
+    card.style.setProperty('--card-color',cm.color);
+    card.style.setProperty('--icon-bg',cm.bg);
+    card.innerHTML=`
+      <div class="card-top">
+        <div class="card-icon">${esc(app.icon||'🧰')}</div>
+        <button class="card-edit" type="button" aria-label="修改 ${esc(app.name)}" title="修改">✏️</button>
+      </div>
+      <h2>${esc(app.name||'未命名工具')}</h2>
+      <p>${esc(app.desc||'尚未填寫說明')}</p>
+      <div class="card-bottom">
+        <div class="status ${app.url?'ready':''}">
+          <span class="dot"></span><span>${app.url?'已設定':'尚未設定網址'}</span>
+        </div>
+        <div class="enter">進入 →</div>
+      </div>`;
+
+    card.addEventListener('click',()=>openApp(app.id));
+    card.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();openApp(app.id)}
+    });
+    card.querySelector('.card-edit').addEventListener('click',e=>{
+      e.stopPropagation();openToolModal(app.id);
+    });
+    grid.appendChild(card);
+  });
+
+  const add=document.createElement('article');
+  add.className='card add-card clickable';
+  add.tabIndex=0;
+  add.innerHTML=`<div><div class="plus">＋</div><strong>新增工具</strong><span>加入其他專案入口</span></div>`;
+  add.onclick=()=>openToolModal();
+  add.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openToolModal()}};
+  grid.appendChild(add);
+
+  document.getElementById('toolCount').textContent=`${apps.length} 個工具`;
+}
+function openApp(id){
+  const app=apps.find(x=>x.id===id);
+  if(!app)return;
+  if(!app.url){
+    openToolModal(id);
+    showToast('請先設定這個工具的網址');
+    return;
+  }
+  location.href=app.url;
+}
+function showOverlay(id){document.getElementById(id).classList.add('show')}
+function hideOverlay(id){document.getElementById(id).classList.remove('show')}
+
+function openToolModal(id=null){
+  editingId=id;
+  const app=id?apps.find(x=>x.id===id):null;
+  document.getElementById('toolModalTitle').textContent=app?'修改工具':'新增工具';
+  document.getElementById('toolIcon').value=app?.icon||'🧰';
+  document.getElementById('toolName').value=app?.name||'';
+  document.getElementById('toolDesc').value=app?.desc||'';
+  document.getElementById('toolUrl').value=app?.url||'';
+  document.getElementById('toolColor').value=app?.color||'slate';
+  document.getElementById('deleteToolBtn').style.display=app?'block':'none';
+  showOverlay('toolOverlay');
+  setTimeout(()=>document.getElementById(app?'toolUrl':'toolName').focus(),80);
+}
+function saveTool(){
+  const name=document.getElementById('toolName').value.trim();
+  const icon=document.getElementById('toolIcon').value.trim()||'🧰';
+  const desc=document.getElementById('toolDesc').value.trim();
+  const url=normalizeUrl(document.getElementById('toolUrl').value);
+  const color=document.getElementById('toolColor').value||'slate';
+  if(!name){showToast('請輸入工具名稱');document.getElementById('toolName').focus();return}
+
+  if(editingId){
+    const i=apps.findIndex(x=>x.id===editingId);
+    if(i>=0)apps[i]={...apps[i],name,icon,desc,url,color};
+  }else{
+    apps.push({id:uid(),name,icon,desc,url,color,builtin:false});
+  }
+  saveApps();render();hideOverlay('toolOverlay');showToast(editingId?'工具已更新':'工具已新增');
+}
+function deleteTool(){
+  if(!editingId)return;
+  const app=apps.find(x=>x.id===editingId);
+  if(!app)return;
+  if(!confirm(`確定要從工具中心移除「${app.name}」嗎？\n\n只會刪除入口，不會刪除原本 GitHub 專案或系統資料。`))return;
+  apps=apps.filter(x=>x.id!==editingId);
+  saveApps();render();hideOverlay('toolOverlay');showToast('入口已移除');
+}
+function restoreDefaults(){
+  let added=0;
+  for(const d of defaultApps){
+    if(!apps.some(x=>x.id===d.id)){
+      const copy=clone(d);
+      if(copy.id==='finance')copy.url=autoFinanceUrl();
+      apps.push(copy);added++;
+    }
+  }
+  saveApps();render();
+  showToast(added?`已補回 ${added} 個預設工具`:'兩個預設工具都還在');
+}
+
+document.getElementById('addToolBtn').onclick=()=>openToolModal();
+document.getElementById('settingsBtn').onclick=()=>showOverlay('settingsOverlay');
+document.getElementById('saveToolBtn').onclick=saveTool;
+document.getElementById('deleteToolBtn').onclick=deleteTool;
+document.getElementById('restoreDefaultsBtn').onclick=restoreDefaults;
+
+document.querySelectorAll('[data-close]').forEach(btn=>{
+  btn.onclick=()=>hideOverlay(btn.dataset.close);
+});
+document.querySelectorAll('.overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)hideOverlay(el.id)});
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.overlay.show').forEach(el=>hideOverlay(el.id));
+});
+
+rememberHome();
+render();
+</script>
+</body>
+</html>
