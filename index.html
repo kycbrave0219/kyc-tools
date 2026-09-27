@@ -9,7 +9,7 @@
 <link rel="shortcut icon" href="favicon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>KYC 工具中心 v1.3</title>
+<title>KYC 工具中心 v1.4</title>
 <style>
 :root{
   --bg:#f4f6f8;--panel:#fff;--line:#e5e7eb;--text:#111827;--muted:#6b7280;
@@ -27,9 +27,11 @@ body{min-height:100vh}
 }
 .brand{display:flex;align-items:center;gap:12px;min-width:0}
 .logo{
-  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
-  background:linear-gradient(145deg,#0f172a,#334155);color:#fff;font-weight:850;font-size:17px;
-  box-shadow:0 8px 22px rgba(15,23,42,.2)
+  width:44px;height:44px;border-radius:14px;overflow:hidden;display:grid;place-items:center;
+  background:#fff;box-shadow:0 8px 22px rgba(15,23,42,.16)
+}
+.logo img{
+  width:100%;height:100%;display:block;object-fit:cover
 }
 .brand-title{font-size:18px;font-weight:850;letter-spacing:.02em}
 .brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
@@ -147,10 +149,10 @@ body{min-height:100vh}
 <body>
 <header class="header">
   <div class="brand">
-    <div class="logo">KYC</div>
+    <div class="logo"><img src="logo.png" alt="KYC"></div>
     <div>
       <div class="brand-title">工具中心</div>
-      <div class="brand-sub">統一入口 · v1.3</div>
+      <div class="brand-sub">統一入口 · v1.4</div>
     </div>
   </div>
   <div class="header-actions">
@@ -274,12 +276,12 @@ const defaultApps=[
   {
     id:'health',name:'飲食健康管理',icon:'🥗',
     desc:'食品主檔、飲食紀錄、營養計算、體重體脂、運動與照片等功能。',
-    url:'',color:'green',builtin:true
+    url:'https://kycbrave0219.github.io/food-log-app/',color:'green',builtin:true
   },
   {
     id:'finance',name:'財經知識系統',icon:'📈',
     desc:'文章收藏、網址匯入、螢光筆、文字註解、名詞管理與閱讀整理。',
-    url:'',color:'blue',builtin:true
+    url:'https://kycbrave0219.github.io/finance-knowledge-system/',color:'blue',builtin:true
   }
 ];
 
@@ -307,25 +309,37 @@ function rememberHome(){
   }catch(e){}
 }
 function loadApps(){
+  const defaultHealth='https://kycbrave0219.github.io/food-log-app/';
+  const defaultFinance='https://kycbrave0219.github.io/finance-knowledge-system/';
+
   try{
     const saved=JSON.parse(localStorage.getItem(APPS_KEY)||'null');
-    if(Array.isArray(saved) && saved.length)return saved;
+    if(Array.isArray(saved) && saved.length){
+      let changed=false;
+      const h=saved.find(x=>x.id==='health');
+      const f=saved.find(x=>x.id==='finance');
+
+      // 舊版若尚未設定網址，自動補上；已有自訂網址則保留
+      if(h && !String(h.url||'').trim()){h.url=defaultHealth;changed=true}
+      if(f && !String(f.url||'').trim()){f.url=defaultFinance;changed=true}
+
+      if(changed)localStorage.setItem(APPS_KEY,JSON.stringify(saved));
+      return saved;
+    }
   }catch(e){}
 
   const apps=clone(defaultApps);
 
-  // 自動承接 v1.1 已設定的兩個網址
+  // 若 v1.1 曾經設定過網址，優先承接；否則使用正式 GitHub Pages 網址
   try{
     const legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||'{}')||{};
     const h=apps.find(x=>x.id==='health');
     const f=apps.find(x=>x.id==='finance');
-    if(h)h.url=legacy.health||'';
-    if(f)f.url=legacy.finance||autoFinanceUrl();
-  }catch(e){
-    const f=apps.find(x=>x.id==='finance');
-    if(f)f.url=autoFinanceUrl();
-  }
-  saveApps(apps);
+    if(h)h.url=legacy.health||defaultHealth;
+    if(f)f.url=legacy.finance||defaultFinance;
+  }catch(e){}
+
+  localStorage.setItem(APPS_KEY,JSON.stringify(apps));
   return apps;
 }
 function saveApps(list=apps){
@@ -442,7 +456,8 @@ function restoreDefaults(){
   for(const d of defaultApps){
     if(!apps.some(x=>x.id===d.id)){
       const copy=clone(d);
-      if(copy.id==='finance')copy.url=autoFinanceUrl();
+      if(copy.id==='health')copy.url='https://kycbrave0219.github.io/food-log-app/';
+      if(copy.id==='finance')copy.url='https://kycbrave0219.github.io/finance-knowledge-system/';
       apps.push(copy);added++;
     }
   }
