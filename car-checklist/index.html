@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f7fb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="交車檢查表">
+<title>我的交車檢查表</title>
+<style>
+:root{color-scheme:light;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC",system-ui,sans-serif;color:#13243b;background:#f4f7fb}*{box-sizing:border-box}body{margin:0;padding:env(safe-area-inset-top) 0 max(28px,env(safe-area-inset-bottom));line-height:1.48}main{max-width:800px;margin:0 auto;padding:20px 14px 90px}.top{display:flex;align-items:center;gap:12px;margin:2px 0 18px}.logo{background:#1465cc;color:white;padding:11px;border-radius:14px;font-size:23px}.top h1{margin:0;font-size:23px}.sub{color:#63748a;font-size:13px}section{background:white;border:1px solid #e4e9f1;border-radius:16px;padding:18px 16px;margin-bottom:13px;box-shadow:0 2px 7px #19365408}h2{margin:0 0 12px;font-size:17px}h3{margin:0;font-size:17px}input,textarea,button,select{font:inherit}input:not([type=checkbox]),textarea{width:100%;border:1px solid #ccd6e3;border-radius:10px;padding:11px 12px;background:white;font-size:16px;color:#172a45;outline-color:#246bd2}textarea{min-height:92px;resize:vertical}.fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field label{display:block;font-size:12px;color:#5b6b80;margin-bottom:4px}.wide{grid-column:span 2}button{border:0;background:#1465cc;color:white;border-radius:10px;padding:11px 13px;min-height:42px;cursor:pointer;font-weight:600}button:disabled{opacity:.5;cursor:default}.secondary{background:#eef3f9;color:#223d60}.outline{background:white;color:#1b5cae;border:1px solid #bdd0e7}.danger{background:#fff0f0;color:#b22626}.tiny{padding:6px 9px;min-height:35px;font-size:13px}.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.space{justify-content:space-between}.progress{width:100%;height:11px;background:#e5ecf4;border-radius:16px;overflow:hidden;margin:12px 0 8px}.fill{height:100%;background:#1c9c74;transition:width .2s}.nav{display:flex;gap:8px;overflow:auto;padding:5px 0 10px;scrollbar-width:none}.nav button{flex:0 0 auto;white-space:nowrap;background:#eff4fa;color:#48617e}.nav button.selected{background:#1465cc;color:white}.item{display:flex;align-items:flex-start;gap:9px;padding:12px 0;border-bottom:1px solid #edf0f5}.item:last-child{border:0}.check{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0;cursor:pointer}.check input{width:23px;height:23px;min-width:23px;accent-color:#168a6e;margin:0;cursor:pointer}.labeltext{font-size:15px;line-height:1.55;overflow-wrap:anywhere}.checked .labeltext{color:#7b899b}.actions{display:flex;flex-wrap:wrap;gap:3px}.actions button{padding:7px 9px;min-width:33px;min-height:35px}.issue{font-size:12px;color:#af4b17;background:#fff5e9;padding:6px 8px;border-radius:7px;margin:7px 0 0 35px}.help{font-size:13px;color:#6a7a90;margin:8px 0}.status{font-size:13px;color:#48617e;font-weight:600}.status.error{color:#b22626}.notice{background:#edf5ff;padding:10px;border-radius:9px;font-size:13px;color:#365a85;margin:10px 0}.hide{display:none!important}.authfields{display:grid;gap:8px;margin:10px 0}.authbuttons{display:flex;gap:8px;flex-wrap:wrap}footer{text-align:center;color:#8592a6;font-size:12px;margin:18px 0} .footerbar{position:fixed;bottom:0;left:0;right:0;background:#ffffffea;backdrop-filter:blur(12px);padding:10px max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom));border-top:1px solid #e4e9f1;z-index:5}.footerinner{max-width:800px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:8px}.footerinner button{flex:1}.tag{font-size:12px;border-radius:40px;background:#eaf3ff;color:#2968ad;padding:4px 10px} @media(max-width:430px){.fieldgrid{gap:8px}main{padding:14px 10px 100px}section{padding:14px 12px}.top h1{font-size:21px}.actions button{padding:5px 7px;font-size:13px}.labeltext{font-size:15px}}
+</style>
+</head>
+<body>
+<main>
+ <header class="top"><div class="logo">🚙</div><div><h1>新車交車檢查表</h1><div class="sub">手機直接勾選・可自由增刪修改・自動儲存</div></div></header>
+ <section>
+  <div class="toolbar space"><h2 style="margin:0">儲存與同步</h2><span class="tag" id="syncStatus">本機儲存</span></div>
+  <div id="authArea">
+   <p class="help">不登入也可以勾選（保存在這支手機的瀏覽器）。若要同步到 Supabase，請使用你原本的 Supabase 帳號登入。</p>
+   <div class="authfields"><input id="email" type="email" autocomplete="email" placeholder="電子郵件"><input id="password" type="password" autocomplete="current-password" placeholder="密碼"></div>
+   <div class="authbuttons"><button id="login">登入並啟用雲端同步</button><button id="register" class="outline">建立帳號</button></div>
+  </div>
+  <div id="userArea" class="hide"><div class="toolbar space"><span class="status" id="userEmail"></span><button class="secondary tiny" id="logout">登出</button></div><div class="notice">已連接 Supabase。資料變動會先保留在本機，再同步至雲端；關閉後仍能重新載入。</div></div>
+  <div id="authMessage" class="help" role="status"></div>
+ </section>
+ <section>
+  <h2>車輛資料</h2>
+  <div class="fieldgrid">
+   <div class="field wide"><label for="model">車型／車色</label><input id="model" placeholder="例：Toyota Corolla Cross / 白色"></div>
+   <div class="field"><label for="plate">車牌號碼</label><input id="plate" placeholder="ABC-1234"></div>
+   <div class="field"><label for="date">交車日期</label><input id="date" type="date"></div>
+   <div class="field"><label for="mileage">交車里程（公里）</label><input id="mileage" type="number" min="0" inputmode="decimal" placeholder="例如 12"></div>
+   <div class="field"><label for="vin">車身號碼 VIN</label><input id="vin" placeholder="選填"></div>
+  </div>
+ </section>
+ <section>
+  <div class="toolbar space"><h2 style="margin:0">檢查進度</h2><b id="progressText">0 / 47</b></div>
+  <div class="progress"><div id="progressFill" class="fill" style="width:0%"></div></div>
+  <div class="toolbar space"><span class="help" id="progressPercent">0% 完成</span><label class="help"><input type="checkbox" id="incompleteOnly"> 只顯示未完成</label></div>
+ </section>
+ <section>
+  <div class="toolbar space"><h2 style="margin:0">檢查清單</h2><button class="secondary tiny" id="addCategory">＋ 新增分類</button></div>
+  <div id="categoryNav" class="nav"></div>
+  <div class="toolbar space" style="margin:4px 0 10px"><h3 id="categoryTitle"></h3><span class="toolbar"><button class="secondary tiny" id="renameCategory">改名稱</button><button class="danger tiny" id="deleteCategory">刪分類</button></span></div>
+  <div id="items"></div>
+  <button class="outline" style="width:100%;margin-top:12px" id="addItem">＋ 新增檢查項目</button>
+ </section>
+ <section>
+  <h2>現場問題及備註</h2>
+  <textarea id="notes" placeholder="例如：右後車門有細微刮痕，已請業務確認處理日期……"></textarea>
+ </section>
+ <section>
+  <h2>備份與紀錄</h2>
+  <div class="toolbar"><button id="copy" class="secondary">複製全部紀錄</button><button id="export" class="secondary">備份 JSON</button><button id="import" class="secondary">匯入備份</button><input id="file" type="file" accept="application/json,.json" class="hide"></div>
+  <p class="help">建議在交車現場完成後「複製全部紀錄」並存入備忘錄。若未登入，同一支手機的瀏覽器資料被清除後可能無法恢復。</p>
+ </section>
+ <footer>車輛交車檢查表｜個人使用｜不需要安裝原生 App</footer>
+</main>
+<div class="footerbar"><div class="footerinner"><span class="status" id="bottomStatus">已在本機保存</span><button id="saveNow">立即同步</button></div></div>
+<script type="module">
+const SB_URL='https://tfyffsondjlvxbezsckr.supabase.co';
+const SB_KEY='sb_publishable_8DrxHwmptB-YKgpjt7rLWA_GAa3A9C_';
+const STORAGE='kyc_car_delivery_checklist_v1';
+// 交車檢查表以本機先保存，登入後再雲端同步。
+const dataDefault=[
+ ['車輛基本資料',['車型、版本、車色與合約一致','車牌與行照一致','車身號碼（VIN）與文件一致','確認出廠年月','確認交車里程數並拍照','原廠及加購配備符合合約','貸款、尾款與付款金額確認']],
+ ['車身外觀',['引擎蓋、車頂、車門及行李廂無刮傷凹痕','前後保桿與烤漆無異常','車門、引擎蓋及尾門開關順暢','前後擋風玻璃、車窗無裂痕','前後燈殼、後視鏡無損傷','輪胎、輪框沒有損傷','確認胎壓及輪胎製造日期','車底無漏油、漏液','隔熱紙平整、無明顯氣泡']],
+ ['車內及配備',['座椅無破損與污漬、調整正常','方向盤、儀表與門板無刮傷','安全帶與座椅固定正常','冷氣、暖氣、風量正常','電動窗、中控鎖、後視鏡調整正常','中控螢幕、藍牙與音響正常','倒車影像、環景顯示正常（如有）','USB與手機充電功能正常','行車紀錄器、導航及加購設備正常','腳踏墊、後車廂與隨車工具齊全']],
+ ['車輛功能測試',['啟動正常、儀表無異常警示','方向燈、頭燈、煞車燈正常','雨刷、噴水功能正常','喇叭正常','排檔、手煞車及 Auto Hold 正常（如有）','煞車與方向盤操作正常','ACC、車道輔助等功能確認（如有）','智慧鑰匙及備用鑰匙正常','短距離試駕無異音及異常震動','業務示範重要按鈕及安全功能']],
+ ['文件及正式交車',['取得行車執照','確認強制險、任意險已生效','取得車主手冊及保固資訊','取得兩把鑰匙及配件','確認合約贈品已交齊','確認付款收據與貸款資料','確認 eTag 申辦情況','確認油量足夠開回家','確認首次保養時間或里程','瑕疵已拍照並約定處理方式','全部確認後再簽交車確認單']]
+];
+const defaults=()=>({vehicle:{model:'',plate:'',date:'',mileage:'',vin:''},sections:dataDefault.map(([name,items])=>({id:crypto.randomUUID(),name,items:items.map(text=>({id:crypto.randomUUID(),text,done:false,issue:false,note:''}))})),notes:''});
+const el=id=>document.getElementById(id);
+let saved;try{saved=JSON.parse(localStorage.getItem(STORAGE)||'null')}catch{}
+let state=(saved?.state?.sections?.length?saved.state:defaults());
+let cloudId=saved?.cloudId||null,dirty=Boolean(saved?.dirty),active=state.sections[0]?.id||null,user=null,sb=null,timer=null,busy=false,changeVersion=0;
+function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function localSave(markDirty=true){if(markDirty){dirty=true;changeVersion++;}try{localStorage.setItem(STORAGE,JSON.stringify({state,cloudId,dirty}))}catch(e){setStatus('本機儲存失敗，請匯出備份',true)}if(markDirty&&user&&sb)queueSave();else if(!user)setStatus('已在本機保存');}
+function setStatus(s,error=false){el('syncStatus').textContent=s;el('bottomStatus').textContent=s;el('syncStatus').style.color=error?'#b22626':'#2968ad';}
+function counts(){let all=state.sections.flatMap(x=>x.items);let done=all.filter(i=>i.done).length;return {total:all.length,done};}
+function renderProgress(){let {total,done}=counts();let pct=total?Math.round(done/total*100):100;el('progressText').textContent=`${done} / ${total}`;el('progressFill').style.width=`${pct}%`;el('progressPercent').textContent=`${pct}% 完成`;}
+function renderNav(){let nav=el('categoryNav');nav.innerHTML='';for(const s of state.sections){const b=document.createElement('button');b.textContent=`${s.name} ${s.items.filter(x=>x.done).length}/${s.items.length}`;if(s.id===active)b.classList.add('selected');b.addEventListener('click',()=>{active=s.id;renderNav();renderItems()});nav.append(b)}}
+function renderItems(){let section=state.sections.find(s=>s.id===active)||state.sections[0];if(!section){el('categoryTitle').textContent='目前沒有分類';el('items').innerHTML='';return}active=section.id;el('categoryTitle').textContent=section.name;let list=el('items');list.innerHTML='';for(const item of section.items){if(el('incompleteOnly').checked&&item.done)continue;const root=document.createElement('div');root.className='item'+(item.done?' checked':'');const c=document.createElement('label');c.className='check';const cb=document.createElement('input');cb.type='checkbox';cb.checked=item.done;const title=document.createElement('span');title.className='labeltext';title.textContent=item.text;c.append(cb,title);cb.addEventListener('change',()=>{item.done=cb.checked;root.classList.toggle('checked',item.done);localSave();renderProgress();renderNav();if(el('incompleteOnly').checked)renderItems()});const a=document.createElement('div');a.className='actions';const edit=document.createElement('button');edit.className='secondary tiny';edit.textContent='修改';edit.title='修改項目文字';edit.onclick=()=>{const t=prompt('修改檢查內容',item.text);if(t===null)return;if(!t.trim())return alert('內容不可空白');item.text=t.trim();localSave();renderItems()};const issue=document.createElement('button');issue.className='secondary tiny';issue.textContent=item.issue?'⚠':'備註';issue.onclick=()=>{const n=prompt('問題或備註（留空代表清除備註）',item.note||'');if(n===null)return;item.note=n.trim();item.issue=Boolean(item.note);localSave();renderItems()};const del=document.createElement('button');del.className='danger tiny';del.textContent='刪除';del.onclick=()=>{if(!confirm(`確定刪除「${item.text}」？`))return;section.items=section.items.filter(i=>i.id!==item.id);localSave();renderAll()};a.append(edit,issue,del);const body=document.createElement('div');body.style.flex='1';body.style.minWidth='0';body.append(c);if(item.issue){let p=document.createElement('div');p.className='issue';p.textContent='⚠ '+item.note;body.append(p)}root.append(body,a);list.append(root)}}
+function renderAll(){if(!state.sections.some(s=>s.id===active))active=state.sections[0]?.id||null;renderProgress();renderNav();renderItems();for(const k of ['model','plate','date','mileage','vin'])el(k).value=state.vehicle?.[k]||'';el('notes').value=state.notes||''}
+for(const k of ['model','plate','date','mileage','vin'])el(k).addEventListener('input',e=>{state.vehicle[k]=e.target.value;localSave()});
+el('notes').addEventListener('input',e=>{state.notes=e.target.value;localSave()});
+el('incompleteOnly').addEventListener('change',renderItems);
+el('addItem').onclick=()=>{const s=state.sections.find(x=>x.id===active);if(!s)return;const text=prompt('新增檢查項目');if(!text?.trim())return;s.items.push({id:crypto.randomUUID(),text:text.trim(),done:false,issue:false,note:''});localSave();renderAll()};
+el('addCategory').onclick=()=>{const name=prompt('新增分類名稱');if(!name?.trim())return;const s={id:crypto.randomUUID(),name:name.trim(),items:[]};state.sections.push(s);active=s.id;localSave();renderAll()};
+el('renameCategory').onclick=()=>{const s=state.sections.find(x=>x.id===active);if(!s)return;const name=prompt('修改分類名稱',s.name);if(!name?.trim())return;s.name=name.trim();localSave();renderAll()};
+el('deleteCategory').onclick=()=>{if(state.sections.length<2)return alert('至少要保留一個分類');const s=state.sections.find(x=>x.id===active);if(!s||!confirm(`確定刪除「${s.name}」及其中 ${s.items.length} 個項目？`))return;state.sections=state.sections.filter(x=>x.id!==s.id);active=state.sections[0].id;localSave();renderAll()};
+function report(){const {total,done}=counts();const v=state.vehicle||{};return `交車檢查紀錄\n檢查日期：${v.date||'未填'}\n車型：${v.model||'未填'}\n車牌：${v.plate||'未填'}\nVIN：${v.vin||'未填'}\n里程：${v.mileage||'未填'} 公里\n完成：${done}/${total}\n\n${state.sections.map(s=>s.name+'\n'+s.items.map(i=>`${i.done?'☑':'☐'} ${i.text}${i.note?'\n   ⚠ '+i.note:''}`).join('\n')).join('\n\n')}\n\n現場問題與備註：\n${state.notes||'無'}`}
+el('copy').onclick=async()=>{try{await navigator.clipboard.writeText(report());alert('完整紀錄已複製，可以貼到備忘錄')}catch{const ta=document.createElement('textarea');ta.value=report();document.body.append(ta);ta.select();document.execCommand('copy');ta.remove();alert('已嘗試複製，請貼到備忘錄確認')}};
+el('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,state},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='car-checklist-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+el('import').onclick=()=>el('file').click();el('file').onchange=async(e)=>{const f=e.target.files?.[0];if(!f)return;try{const d=JSON.parse(await f.text());const v=d.state;if(!Array.isArray(v?.sections)||!v.vehicle||typeof v.notes!=='string')throw Error('備份格式不符');if(!confirm('匯入會取代目前檢查資料，確定嗎？'))return;state=v;active=state.sections[0]?.id||null;localSave();renderAll();alert('匯入完成')}catch(err){alert('匯入失敗：'+err.message)}finally{e.target.value=''}};
+async function sync(){if(!user||!sb){setStatus('本機模式');return}if(busy)return;if(!dirty){setStatus('雲端已同步');return}busy=true;setStatus('同步中…');const sentVersion=changeVersion;try{const id=cloudId||crypto.randomUUID();const row={id,user_id:user.id,title:'我的交車檢查表',vehicle_info:JSON.parse(JSON.stringify(state.vehicle)),sections:JSON.parse(JSON.stringify(state.sections)),notes:state.notes};const {error}=await sb.from('car_delivery_checklists').upsert(row,{onConflict:'id'});if(error)throw error;cloudId=id;dirty=changeVersion!==sentVersion;localSave(false);setStatus(dirty?'仍有待同步變更':'雲端已同步')}catch(e){setStatus('同步失敗／本機已保存',true);el('authMessage').textContent='同步失敗：'+(e.message||String(e))}finally{busy=false;if(dirty&&user&&sb)queueSave()}}
+function queueSave(){clearTimeout(timer);timer=setTimeout(sync,650);setStatus('等待雲端同步…')}
+el('saveNow').onclick=()=>{if(!user)return alert('請先登入，才能同步 Supabase；目前已保存在這支手機。');dirty=true;localSave(false);sync()};
+async function hydrateCloud(){if(!user)return;try{setStatus('讀取雲端資料…');const {data,error}=await sb.from('car_delivery_checklists').select('id,vehicle_info,sections,notes,updated_at').eq('user_id',user.id).order('updated_at',{ascending:false}).limit(1);if(error)throw error;if(data?.length){const item=data[0];if(dirty&&!confirm('找到雲端紀錄。按「確定」載入雲端資料；按「取消」保留本機資料並覆蓋雲端。')){cloudId=item.id;localSave(false);queueSave();return}cloudId=item.id;state={vehicle:item.vehicle_info||{},sections:item.sections||[],notes:item.notes||''};dirty=false;active=state.sections[0]?.id||null;localSave(false);renderAll();setStatus('雲端資料已載入')}else{dirty=true;localSave(false);await sync()}}catch(e){setStatus('讀取失敗／本機已保存',true);el('authMessage').textContent=e.message||String(e)}}
+function renderAuth(){el('authArea').classList.toggle('hide',Boolean(user));el('userArea').classList.toggle('hide',!user);if(user)el('userEmail').textContent=user.email||'已登入';else setStatus('本機儲存')}
+el('login').onclick=async()=>{if(!sb)return alert('Supabase 連線尚未載入');const email=el('email').value.trim(),password=el('password').value;if(!email||!password)return alert('請輸入電子郵件與密碼');el('authMessage').textContent='登入中…';const {data,error}=await sb.auth.signInWithPassword({email,password});if(error){el('authMessage').textContent='登入失敗：'+error.message;return}user=data.user;el('password').value='';el('authMessage').textContent='登入成功';renderAuth();await hydrateCloud()};
+el('register').onclick=async()=>{if(!sb)return alert('尚未連線');const email=el('email').value.trim(),password=el('password').value;if(!email||password.length<6)return alert('請輸入電子郵件及至少 6 字元的密碼');const {data,error}=await sb.auth.signUp({email,password});el('authMessage').textContent=error?'註冊失敗：'+error.message:(data.session?'註冊成功，已登入':'註冊申請成功；如收到驗證郵件請先完成驗證。');if(data.session){user=data.user;renderAuth();hydrateCloud()}};
+el('logout').onclick=async()=>{if(!confirm('確定登出雲端帳號？本機資料仍會保留。'))return;await sb?.auth.signOut();user=null;cloudId=null;localSave(false);renderAuth()};
+renderAll();renderAuth();
+try{const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');sb=createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const {data}=await sb.auth.getSession();if(data?.session?.user){user=data.session.user;renderAuth();await hydrateCloud()}sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){user=null;renderAuth()} });}catch(e){el('authMessage').textContent='目前無法連線 Supabase，仍可使用本機檢查表：'+(e.message||'網路連線異常');setStatus('本機模式')}
+</script>
+</body>
+</html>
